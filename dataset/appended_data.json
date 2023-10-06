@@ -1,5 +1,5 @@
 {
-	"name": "cleaned_data",
+	"name": "appended_data",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "etl_assignment1_ls",
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "CleanedData.csv",
+				"fileName": "AppendedData.csv",
 				"container": "transformed"
 			},
 			"columnDelimiter": ",",

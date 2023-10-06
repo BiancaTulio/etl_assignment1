@@ -1,5 +1,5 @@
 {
-	"name": "cleaned_data",
+	"name": "additional_data",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "etl_assignment1_ls",
@@ -10,8 +10,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "CleanedData.csv",
-				"container": "transformed"
+				"fileName": "AdditionalData.csv",
+				"container": "raw"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
@@ -37,14 +37,6 @@
 			},
 			{
 				"name": "Price",
-				"type": "String"
-			},
-			{
-				"name": "TotalAmount",
-				"type": "String"
-			},
-			{
-				"name": "CleanedProductName",
 				"type": "String"
 			}
 		]

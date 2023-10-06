@@ -10,23 +10,122 @@
 						"type": "DatasetReference"
 					},
 					"name": "CleanedData"
+				},
+				{
+					"dataset": {
+						"referenceName": "additional_data",
+						"type": "DatasetReference"
+					},
+					"name": "AdditionalData"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "merged_data",
+						"type": "DatasetReference"
+					},
+					"name": "MergedData",
+					"rejectedDataLinkedService": {
+						"referenceName": "etl_assignment1_ls",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "appended_data",
+						"type": "DatasetReference"
+					},
+					"name": "AppendedData",
+					"rejectedDataLinkedService": {
+						"referenceName": "etl_assignment1_ls",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinSources"
+				},
+				{
+					"name": "RemoveDuplicatedColumns"
+				},
+				{
+					"name": "UnionSources"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
+				"          TransactionID as integer,",
+				"          ProductID as integer,",
+				"          ProductName as string,",
+				"          Quantity as integer,",
+				"          Price as float,",
+				"          TotalAmount as float,",
+				"          CleanedProductName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> CleanedData",
+				"source(output(",
+				"          TransactionID as integer,",
+				"          ProductID as integer,",
+				"          ProductName as string,",
+				"          Quantity as float,",
+				"          Price as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> AdditionalData",
+				"CleanedData, AdditionalData join(CleanedData@ProductID == AdditionalData@ProductID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSources",
+				"JoinSources select(mapColumn(",
+				"          TransactionID = CleanedData@TransactionID,",
+				"          ProductID = CleanedData@ProductID,",
+				"          ProductName = CleanedData@ProductName,",
+				"          Quantity = CleanedData@Quantity,",
+				"          Price = CleanedData@Price,",
+				"          TotalAmount,",
+				"          CleanedProductName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveDuplicatedColumns",
+				"AdditionalData, CleanedData union(byName: true)~> UnionSources",
+				"RemoveDuplicatedColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
 				"          TransactionID as string,",
 				"          ProductID as string,",
 				"          ProductName as string,",
 				"          Quantity as string,",
 				"          Price as string,",
-				"          TotalAmount as string",
+				"          TotalAmount as string,",
+				"          CleanedProductName as string",
 				"     ),",
-				"     allowSchemaDrift: true,",
+				"     partitionFileNames:['MergedData.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> MergedData",
+				"UnionSources sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     inferDriftedColumnTypes: true,",
-				"     ignoreNoFilesFound: false) ~> CleanedData"
+				"     input(",
+				"          TransactionID as string,",
+				"          ProductID as string,",
+				"          ProductName as string,",
+				"          Quantity as string,",
+				"          Price as string,",
+				"          TotalAmount as string,",
+				"          CleanedProductName as string",
+				"     ),",
+				"     partitionFileNames:['AppendedData.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> AppendedData"
 			]
 		}
 	}
