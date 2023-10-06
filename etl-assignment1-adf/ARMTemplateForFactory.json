@@ -66,6 +66,57 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pl_merge_data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "MergeData",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "MergeData",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"CleanedData": {},
+									"AdditionalData": {},
+									"MergedData": {},
+									"AppendedData": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "transform"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/MergeData')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_transform_raw_data')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -116,7 +167,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/cleaned_data')]",
+			"name": "[concat(parameters('factoryName'), '/additional_data')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -129,6 +180,56 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
+						"fileName": "AdditionalData.csv",
+						"container": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "TransactionID",
+						"type": "String"
+					},
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "ProductName",
+						"type": "String"
+					},
+					{
+						"name": "Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Price",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/appended_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "AppendedData.csv",
 						"container": "transformed"
 					},
 					"columnDelimiter": ",",
@@ -159,6 +260,124 @@
 					},
 					{
 						"name": "TotalAmount",
+						"type": "String"
+					},
+					{
+						"name": "CleanedProductName",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/cleaned_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "CleanedData.csv",
+						"container": "transformed"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "TransactionID",
+						"type": "String"
+					},
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "ProductName",
+						"type": "String"
+					},
+					{
+						"name": "Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Price",
+						"type": "String"
+					},
+					{
+						"name": "TotalAmount",
+						"type": "String"
+					},
+					{
+						"name": "CleanedProductName",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/merged_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "MergedData.csv",
+						"container": "transformed"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "TransactionID",
+						"type": "String"
+					},
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "ProductName",
+						"type": "String"
+					},
+					{
+						"name": "Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Price",
+						"type": "String"
+					},
+					{
+						"name": "TotalAmount",
+						"type": "String"
+					},
+					{
+						"name": "CleanedProductName",
 						"type": "String"
 					}
 				]
@@ -230,6 +449,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
+						"fileName": "TransformedData.csv",
 						"container": "transformed"
 					},
 					"columnDelimiter": ",",
@@ -327,7 +547,7 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false) ~> TransformedData",
-						"TransformedData derive(CleanedProductName = regexReplace(ProductName, '[^A-Za-z0-9]+', '')) ~> DerivedColumnCleanedProductName",
+						"TransformedData derive(CleanedProductName = regexReplace(ProductName, '[^A-Za-z0-9]+', ' ')) ~> DerivedColumnCleanedProductName",
 						"DerivedColumnCleanedProductName sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -336,7 +556,8 @@
 						"          ProductName as string,",
 						"          Quantity as string,",
 						"          Price as string,",
-						"          TotalAmount as string",
+						"          TotalAmount as string,",
+						"          CleanedProductName as string",
 						"     ),",
 						"     partitionFileNames:['CleanedData.csv'],",
 						"     skipDuplicateMapInputs: true,",
@@ -426,6 +647,147 @@
 				"[concat(variables('factoryId'), '/datasets/raw')]",
 				"[concat(variables('factoryId'), '/datasets/transformed_data')]",
 				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MergeData')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "cleaned_data",
+								"type": "DatasetReference"
+							},
+							"name": "CleanedData"
+						},
+						{
+							"dataset": {
+								"referenceName": "additional_data",
+								"type": "DatasetReference"
+							},
+							"name": "AdditionalData"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "merged_data",
+								"type": "DatasetReference"
+							},
+							"name": "MergedData",
+							"rejectedDataLinkedService": {
+								"referenceName": "etl_assignment1_ls",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "appended_data",
+								"type": "DatasetReference"
+							},
+							"name": "AppendedData",
+							"rejectedDataLinkedService": {
+								"referenceName": "etl_assignment1_ls",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "JoinSources"
+						},
+						{
+							"name": "RemoveDuplicatedColumns"
+						},
+						{
+							"name": "UnionSources"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          TransactionID as integer,",
+						"          ProductID as integer,",
+						"          ProductName as string,",
+						"          Quantity as integer,",
+						"          Price as float,",
+						"          TotalAmount as float,",
+						"          CleanedProductName as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> CleanedData",
+						"source(output(",
+						"          TransactionID as integer,",
+						"          ProductID as integer,",
+						"          ProductName as string,",
+						"          Quantity as float,",
+						"          Price as float",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> AdditionalData",
+						"CleanedData, AdditionalData join(CleanedData@ProductID == AdditionalData@ProductID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> JoinSources",
+						"JoinSources select(mapColumn(",
+						"          TransactionID = CleanedData@TransactionID,",
+						"          ProductID = CleanedData@ProductID,",
+						"          ProductName = CleanedData@ProductName,",
+						"          Quantity = CleanedData@Quantity,",
+						"          Price = CleanedData@Price,",
+						"          TotalAmount,",
+						"          CleanedProductName",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> RemoveDuplicatedColumns",
+						"AdditionalData, CleanedData union(byName: true)~> UnionSources",
+						"RemoveDuplicatedColumns sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          TransactionID as string,",
+						"          ProductID as string,",
+						"          ProductName as string,",
+						"          Quantity as string,",
+						"          Price as string,",
+						"          TotalAmount as string,",
+						"          CleanedProductName as string",
+						"     ),",
+						"     partitionFileNames:['MergedData.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> MergedData",
+						"UnionSources sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          TransactionID as string,",
+						"          ProductID as string,",
+						"          ProductName as string,",
+						"          Quantity as string,",
+						"          Price as string,",
+						"          TotalAmount as string,",
+						"          CleanedProductName as string",
+						"     ),",
+						"     partitionFileNames:['AppendedData.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> AppendedData"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/cleaned_data')]",
+				"[concat(variables('factoryId'), '/datasets/additional_data')]",
+				"[concat(variables('factoryId'), '/datasets/merged_data')]",
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]",
+				"[concat(variables('factoryId'), '/datasets/appended_data')]"
 			]
 		}
 	]
