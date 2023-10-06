@@ -1,0 +1,54 @@
+{
+	"name": "Create Total Amount",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "raw",
+						"type": "DatasetReference"
+					},
+					"name": "SSISAssignmentData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "transformed_data",
+						"type": "DatasetReference"
+					},
+					"name": "TransformedData",
+					"rejectedDataLinkedService": {
+						"referenceName": "etl_assignment1_ls",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedColumnTotalAmount"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          TransactionID as integer,",
+				"          ProductID as integer,",
+				"          ProductName as string,",
+				"          Quantity as integer,",
+				"          Price as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SSISAssignmentData",
+				"SSISAssignmentData derive(TotalAmount = multiply(Quantity,Price)) ~> DerivedColumnTotalAmount",
+				"DerivedColumnTotalAmount sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['TransformedData.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TransformedData"
+			]
+		}
+	}
+}

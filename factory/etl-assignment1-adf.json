@@ -1,0 +1,9 @@
+{
+	"name": "etl-assignment1-adf",
+	"location": "swedencentral",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "21994a8d-9bf6-49cc-be2d-ad6c110f43db",
+		"tenantId": "20e9e658-d844-4d9c-a0b7-36389d71736f"
+	}
+}
