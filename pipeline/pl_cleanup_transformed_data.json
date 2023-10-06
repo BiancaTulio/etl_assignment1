@@ -1,9 +1,9 @@
 {
-	"name": "pl_transform_raw_data",
+	"name": "pl_cleanup_transformed_data",
 	"properties": {
 		"activities": [
 			{
-				"name": "CreateTotalAmount",
+				"name": "CleanupProductName",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "CreateTotalAmount",
+						"referenceName": "CleanupProductName",
 						"type": "DataFlowReference"
 					},
 					"compute": {
@@ -30,8 +30,6 @@
 		"folder": {
 			"name": "transform"
 		},
-		"annotations": [],
-		"lastPublishTime": "2023-10-06T10:04:01Z"
-	},
-	"type": "Microsoft.DataFactory/factories/pipelines"
+		"annotations": []
+	}
 }

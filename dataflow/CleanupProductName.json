@@ -1,24 +1,24 @@
 {
-	"name": "CreateTotalAmount",
+	"name": "CleanupProductName",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "raw",
+						"referenceName": "transformed_data",
 						"type": "DatasetReference"
 					},
-					"name": "SSISAssignmentData"
+					"name": "TransformedData"
 				}
 			],
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "transformed_data",
+						"referenceName": "cleaned_data",
 						"type": "DatasetReference"
 					},
-					"name": "TransformedData",
+					"name": "CleanedData",
 					"rejectedDataLinkedService": {
 						"referenceName": "etl_assignment1_ls",
 						"type": "LinkedServiceReference"
@@ -27,7 +27,7 @@
 			],
 			"transformations": [
 				{
-					"name": "DerivedColumnTotalAmount"
+					"name": "DerivedColumnCleanedProductName"
 				}
 			],
 			"scriptLines": [
@@ -36,13 +36,14 @@
 				"          ProductID as integer,",
 				"          ProductName as string,",
 				"          Quantity as integer,",
-				"          Price as float",
+				"          Price as float,",
+				"          TotalAmount as float",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SSISAssignmentData",
-				"SSISAssignmentData derive(TotalAmount = multiply(Quantity,Price)) ~> DerivedColumnTotalAmount",
-				"DerivedColumnTotalAmount sink(allowSchemaDrift: true,",
+				"     ignoreNoFilesFound: false) ~> TransformedData",
+				"TransformedData derive(CleanedProductName = regexReplace(ProductName, '[^A-Za-z0-9]+', '')) ~> DerivedColumnCleanedProductName",
+				"DerivedColumnCleanedProductName sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          TransactionID as string,",
@@ -52,18 +53,10 @@
 				"          Price as string,",
 				"          TotalAmount as string",
 				"     ),",
-				"     partitionFileNames:['TransformedData.csv'],",
+				"     partitionFileNames:['CleanedData.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     mapColumn(",
-				"          TransactionID,",
-				"          ProductID,",
-				"          ProductName,",
-				"          Quantity,",
-				"          Price,",
-				"          TotalAmount",
-				"     ),",
-				"     partitionBy('hash', 1)) ~> TransformedData"
+				"     partitionBy('hash', 1)) ~> CleanedData"
 			]
 		}
 	}
