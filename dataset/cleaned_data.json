@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "CleanedData.csv",
 				"container": "transformed"
 			},
 			"columnDelimiter": ",",

@@ -42,7 +42,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> TransformedData",
-				"TransformedData derive(CleanedProductName = regexReplace(ProductName, '[^A-Za-z0-9]+', '')) ~> DerivedColumnCleanedProductName",
+				"TransformedData derive(CleanedProductName = regexReplace(ProductName, '[^A-Za-z0-9]+', ' ')) ~> DerivedColumnCleanedProductName",
 				"DerivedColumnCleanedProductName sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
