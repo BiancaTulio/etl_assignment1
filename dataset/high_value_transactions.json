@@ -1,20 +1,19 @@
 {
-	"name": "raw",
+	"name": "high_value_transactions",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "etl_assignment1_ls",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "raw"
+			"name": "transformed"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "SSIS_Assignment_Data.csv",
-				"container": "raw"
+				"container": "transformed"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
@@ -41,8 +40,11 @@
 			{
 				"name": "Price",
 				"type": "String"
+			},
+			{
+				"name": "CleanedProductName",
+				"type": "String"
 			}
 		]
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+	}
 }

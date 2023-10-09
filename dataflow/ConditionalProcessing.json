@@ -1,0 +1,86 @@
+{
+	"name": "ConditionalProcessing",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "part4_merged_data",
+						"type": "DatasetReference"
+					},
+					"name": "Part4MergedData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "high_value_transactions",
+						"type": "DatasetReference"
+					},
+					"name": "HighValueTransactions",
+					"rejectedDataLinkedService": {
+						"referenceName": "etl_assignment1_ls",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "low_value_transactions",
+						"type": "DatasetReference"
+					},
+					"name": "LowValueTransactions",
+					"rejectedDataLinkedService": {
+						"referenceName": "etl_assignment1_ls",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "ConditionalSplit"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          TransactionID as integer,",
+				"          TransactionDate as date,",
+				"          TotalAmount as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Part4MergedData",
+				"Part4MergedData split(greater(TotalAmount, 1000),",
+				"     disjoint: false) ~> ConditionalSplit@(HighValue, LowValue)",
+				"ConditionalSplit@HighValue sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          TransactionID as string,",
+				"          ProductID as string,",
+				"          ProductName as string,",
+				"          Quantity as string,",
+				"          Price as string,",
+				"          CleanedProductName as string",
+				"     ),",
+				"     partitionFileNames:['HighValueTransactions.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> HighValueTransactions",
+				"ConditionalSplit@LowValue sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          TransactionID as string,",
+				"          ProductID as string,",
+				"          ProductName as string,",
+				"          Quantity as string,",
+				"          Price as string,",
+				"          CleanedProductName as string",
+				"     ),",
+				"     partitionFileNames:['LowValueTransactions.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> LowValueTransactions"
+			]
+		}
+	}
+}

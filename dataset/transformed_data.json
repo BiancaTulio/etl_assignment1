@@ -5,6 +5,9 @@
 			"referenceName": "etl_assignment1_ls",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "transformed"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
