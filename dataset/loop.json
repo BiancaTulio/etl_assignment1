@@ -1,0 +1,25 @@
+{
+	"name": "loop",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "etl_assignment1_ls",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "loop"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "loop"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
