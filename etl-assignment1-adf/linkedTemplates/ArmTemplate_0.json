@@ -30,112 +30,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/additional_data')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "etl_assignment1_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "AdditionalData.csv",
-						"container": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "TransactionID",
-						"type": "String"
-					},
-					{
-						"name": "ProductID",
-						"type": "String"
-					},
-					{
-						"name": "ProductName",
-						"type": "String"
-					},
-					{
-						"name": "Quantity",
-						"type": "String"
-					},
-					{
-						"name": "Price",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/appended_data')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "etl_assignment1_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "AppendedData.csv",
-						"container": "transformed"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "TransactionID",
-						"type": "String"
-					},
-					{
-						"name": "ProductID",
-						"type": "String"
-					},
-					{
-						"name": "ProductName",
-						"type": "String"
-					},
-					{
-						"name": "Quantity",
-						"type": "String"
-					},
-					{
-						"name": "Price",
-						"type": "String"
-					},
-					{
-						"name": "TotalAmount",
-						"type": "String"
-					},
-					{
-						"name": "CleanedProductName",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/cleaned_data')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -352,6 +246,104 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/part3_cleaned_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Part3CleanedData.csv",
+						"container": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "TransactionID",
+						"type": "String"
+					},
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "ProductName",
+						"type": "String"
+					},
+					{
+						"name": "Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Price",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/additional_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "AdditionalData.csv",
+						"container": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "TransactionID",
+						"type": "String"
+					},
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "ProductName",
+						"type": "String"
+					},
+					{
+						"name": "Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Price",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/CleanupProductName')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -361,10 +353,10 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "transformed_data",
+								"referenceName": "raw",
 								"type": "DatasetReference"
 							},
-							"name": "TransformedData"
+							"name": "SSISAssignmentData"
 						}
 					],
 					"sinks": [
@@ -391,13 +383,12 @@
 						"          ProductID as integer,",
 						"          ProductName as string,",
 						"          Quantity as integer,",
-						"          Price as float,",
-						"          TotalAmount as float",
+						"          Price as float",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> TransformedData",
-						"TransformedData derive(CleanedProductName = regexReplace(ProductName, '[^A-Za-z0-9]+', ' ')) ~> DerivedColumnCleanedProductName",
+						"     ignoreNoFilesFound: false) ~> SSISAssignmentData",
+						"SSISAssignmentData derive(CleanedProductName = lower(ProductName)) ~> DerivedColumnCleanedProductName",
 						"DerivedColumnCleanedProductName sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -417,7 +408,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/transformed_data')]",
+				"[concat(variables('factoryId'), '/datasets/raw')]",
 				"[concat(variables('factoryId'), '/datasets/cleaned_data')]",
 				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
 			]
@@ -509,10 +500,10 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "cleaned_data",
+								"referenceName": "part3_cleaned_data",
 								"type": "DatasetReference"
 							},
-							"name": "CleanedData"
+							"name": "Part3CleanedData"
 						},
 						{
 							"dataset": {
@@ -533,28 +524,11 @@
 								"referenceName": "etl_assignment1_ls",
 								"type": "LinkedServiceReference"
 							}
-						},
-						{
-							"dataset": {
-								"referenceName": "appended_data",
-								"type": "DatasetReference"
-							},
-							"name": "AppendedData",
-							"rejectedDataLinkedService": {
-								"referenceName": "etl_assignment1_ls",
-								"type": "LinkedServiceReference"
-							}
 						}
 					],
 					"transformations": [
 						{
-							"name": "JoinSources"
-						},
-						{
-							"name": "RemoveDuplicatedColumns"
-						},
-						{
-							"name": "UnionSources"
+							"name": "MergeData"
 						}
 					],
 					"scriptLines": [
@@ -563,43 +537,25 @@
 						"          ProductID as integer,",
 						"          ProductName as string,",
 						"          Quantity as integer,",
-						"          Price as float,",
-						"          TotalAmount as float,",
-						"          CleanedProductName as string",
+						"          Price as float",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     inferDriftedColumnTypes: true,",
-						"     ignoreNoFilesFound: false) ~> CleanedData",
+						"     ignoreNoFilesFound: false) ~> Part3CleanedData",
 						"source(output(",
 						"          TransactionID as integer,",
 						"          ProductID as integer,",
 						"          ProductName as string,",
-						"          Quantity as float,",
+						"          Quantity as integer,",
 						"          Price as float",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     inferDriftedColumnTypes: true,",
 						"     ignoreNoFilesFound: false) ~> AdditionalData",
-						"CleanedData, AdditionalData join(CleanedData@ProductID == AdditionalData@ProductID,",
-						"     joinType:'left',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> JoinSources",
-						"JoinSources select(mapColumn(",
-						"          TransactionID = CleanedData@TransactionID,",
-						"          ProductID = CleanedData@ProductID,",
-						"          ProductName = CleanedData@ProductName,",
-						"          Quantity = CleanedData@Quantity,",
-						"          Price = CleanedData@Price,",
-						"          TotalAmount,",
-						"          CleanedProductName",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> RemoveDuplicatedColumns",
-						"AdditionalData, CleanedData union(byName: true)~> UnionSources",
-						"RemoveDuplicatedColumns sink(allowSchemaDrift: true,",
+						"Part3CleanedData, AdditionalData union(byName: false)~> MergeData",
+						"MergeData sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          TransactionID as string,",
@@ -613,35 +569,19 @@
 						"     partitionFileNames:['MergedData.csv'],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> MergedData",
-						"UnionSources sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          TransactionID as string,",
-						"          ProductID as string,",
-						"          ProductName as string,",
-						"          Quantity as string,",
-						"          Price as string,",
-						"          TotalAmount as string,",
-						"          CleanedProductName as string",
-						"     ),",
-						"     partitionFileNames:['AppendedData.csv'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> AppendedData"
+						"     partitionBy('hash', 1)) ~> MergedData"
 					]
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/cleaned_data')]",
+				"[concat(variables('factoryId'), '/datasets/part3_cleaned_data')]",
 				"[concat(variables('factoryId'), '/datasets/additional_data')]",
 				"[concat(variables('factoryId'), '/datasets/merged_data')]",
-				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]",
-				"[concat(variables('factoryId'), '/datasets/appended_data')]"
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_cleanup_transformed_data')]",
+			"name": "[concat(parameters('factoryName'), '/pl_data_cleanup')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -664,9 +604,10 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"TransformedData": {},
+									"SSISAssignmentData": {},
 									"CleanedData": {}
-								}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {},
 							"compute": {
@@ -690,7 +631,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_merge_data')]",
+			"name": "[concat(parameters('factoryName'), '/pl_data_merge')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -713,11 +654,11 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"CleanedData": {},
+									"Part3CleanedData": {},
 									"AdditionalData": {},
-									"MergedData": {},
-									"AppendedData": {}
-								}
+									"MergedData": {}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {},
 							"compute": {
@@ -741,7 +682,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_transform_raw_data')]",
+			"name": "[concat(parameters('factoryName'), '/pl_import_data')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
