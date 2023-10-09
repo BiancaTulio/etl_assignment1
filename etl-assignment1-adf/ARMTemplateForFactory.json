@@ -17,6 +17,56 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/pl_conditional_processing')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ConditionalProcessing",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "ConditionalProcessing",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Part4MergedData": {},
+									"HighValueTransactions": {},
+									"LowValueTransactions": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "transform"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/ConditionalProcessing')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_data_cleanup')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -42,8 +92,7 @@
 								"datasetParameters": {
 									"SSISAssignmentData": {},
 									"CleanedData": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {
@@ -93,8 +142,7 @@
 									"Part3CleanedData": {},
 									"AdditionalData": {},
 									"MergedData": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {
@@ -168,6 +216,58 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/additional_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "raw"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "AdditionalData.csv",
+						"container": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "TransactionID",
+						"type": "String"
+					},
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "ProductName",
+						"type": "String"
+					},
+					{
+						"name": "Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Price",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/cleaned_data')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -175,6 +275,9 @@
 				"linkedServiceName": {
 					"referenceName": "etl_assignment1_ls",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "transformed"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -225,6 +328,116 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/high_value_transactions')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "transformed"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "transformed"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "TransactionID",
+						"type": "String"
+					},
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "ProductName",
+						"type": "String"
+					},
+					{
+						"name": "Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Price",
+						"type": "String"
+					},
+					{
+						"name": "CleanedProductName",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/low_value_transactions')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "transformed"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "transformed"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "TransactionID",
+						"type": "String"
+					},
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "ProductName",
+						"type": "String"
+					},
+					{
+						"name": "Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Price",
+						"type": "String"
+					},
+					{
+						"name": "CleanedProductName",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/merged_data')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -232,6 +445,9 @@
 				"linkedServiceName": {
 					"referenceName": "etl_assignment1_ls",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "transformed"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -282,6 +498,102 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/part3_cleaned_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "raw"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Part3CleanedData.csv",
+						"container": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "TransactionID",
+						"type": "String"
+					},
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "ProductName",
+						"type": "String"
+					},
+					{
+						"name": "Quantity",
+						"type": "String"
+					},
+					{
+						"name": "Price",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/part4_merged_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "raw"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Part4MergedData.csv",
+						"container": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "TransactionID",
+						"type": "String"
+					},
+					{
+						"name": "TransactionDate",
+						"type": "String"
+					},
+					{
+						"name": "TotalAmount",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/raw')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -289,6 +601,9 @@
 				"linkedServiceName": {
 					"referenceName": "etl_assignment1_ls",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "raw"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -338,6 +653,9 @@
 				"linkedServiceName": {
 					"referenceName": "etl_assignment1_ls",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "transformed"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -464,6 +782,100 @@
 				"[concat(variables('factoryId'), '/datasets/raw')]",
 				"[concat(variables('factoryId'), '/datasets/cleaned_data')]",
 				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ConditionalProcessing')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "part4_merged_data",
+								"type": "DatasetReference"
+							},
+							"name": "Part4MergedData"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "high_value_transactions",
+								"type": "DatasetReference"
+							},
+							"name": "HighValueTransactions",
+							"rejectedDataLinkedService": {
+								"referenceName": "etl_assignment1_ls",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "low_value_transactions",
+								"type": "DatasetReference"
+							},
+							"name": "LowValueTransactions",
+							"rejectedDataLinkedService": {
+								"referenceName": "etl_assignment1_ls",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "ConditionalSplit"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          TransactionID as integer,",
+						"          TransactionDate as date,",
+						"          TotalAmount as float",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Part4MergedData",
+						"Part4MergedData split(greater(TotalAmount, 1000),",
+						"     disjoint: false) ~> ConditionalSplit@(HighValue, LowValue)",
+						"ConditionalSplit@HighValue sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          TransactionID as string,",
+						"          ProductID as string,",
+						"          ProductName as string,",
+						"          Quantity as string,",
+						"          Price as string,",
+						"          CleanedProductName as string",
+						"     ),",
+						"     partitionFileNames:['HighValueTransactions.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> HighValueTransactions",
+						"ConditionalSplit@LowValue sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          TransactionID as string,",
+						"          ProductID as string,",
+						"          ProductName as string,",
+						"          Quantity as string,",
+						"          Price as string,",
+						"          CleanedProductName as string",
+						"     ),",
+						"     partitionFileNames:['LowValueTransactions.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> LowValueTransactions"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/part4_merged_data')]",
+				"[concat(variables('factoryId'), '/datasets/high_value_transactions')]",
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]",
+				"[concat(variables('factoryId'), '/datasets/low_value_transactions')]"
 			]
 		},
 		{
@@ -630,104 +1042,6 @@
 				"[concat(variables('factoryId'), '/datasets/part3_cleaned_data')]",
 				"[concat(variables('factoryId'), '/datasets/additional_data')]",
 				"[concat(variables('factoryId'), '/datasets/merged_data')]",
-				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/part3_cleaned_data')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "etl_assignment1_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Part3CleanedData.csv",
-						"container": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "TransactionID",
-						"type": "String"
-					},
-					{
-						"name": "ProductID",
-						"type": "String"
-					},
-					{
-						"name": "ProductName",
-						"type": "String"
-					},
-					{
-						"name": "Quantity",
-						"type": "String"
-					},
-					{
-						"name": "Price",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/additional_data')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "etl_assignment1_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "AdditionalData.csv",
-						"container": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "TransactionID",
-						"type": "String"
-					},
-					{
-						"name": "ProductID",
-						"type": "String"
-					},
-					{
-						"name": "ProductName",
-						"type": "String"
-					},
-					{
-						"name": "Quantity",
-						"type": "String"
-					},
-					{
-						"name": "Price",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
 			]
 		}
