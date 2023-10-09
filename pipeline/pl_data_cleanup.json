@@ -1,5 +1,5 @@
 {
-	"name": "pl_cleanup_transformed_data",
+	"name": "pl_data_cleanup",
 	"properties": {
 		"activities": [
 			{

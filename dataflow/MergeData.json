@@ -12,10 +12,6 @@
 					"name": "CleanedData"
 				},
 				{
-					"dataset": {
-						"referenceName": "additional_data",
-						"type": "DatasetReference"
-					},
 					"name": "AdditionalData"
 				}
 			],
@@ -32,10 +28,6 @@
 					}
 				},
 				{
-					"dataset": {
-						"referenceName": "appended_data",
-						"type": "DatasetReference"
-					},
 					"name": "AppendedData",
 					"rejectedDataLinkedService": {
 						"referenceName": "etl_assignment1_ls",
@@ -77,8 +69,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     inferDriftedColumnTypes: true,",
-				"     ignoreNoFilesFound: false) ~> AdditionalData",
+				"     inferDriftedColumnTypes: true) ~> AdditionalData",
 				"CleanedData, AdditionalData join(CleanedData@ProductID == AdditionalData@ProductID,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
@@ -113,15 +104,6 @@
 				"     partitionBy('hash', 1)) ~> MergedData",
 				"UnionSources sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          TransactionID as string,",
-				"          ProductID as string,",
-				"          ProductName as string,",
-				"          Quantity as string,",
-				"          Price as string,",
-				"          TotalAmount as string,",
-				"          CleanedProductName as string",
-				"     ),",
 				"     partitionFileNames:['AppendedData.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",

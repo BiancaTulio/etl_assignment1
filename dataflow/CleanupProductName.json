@@ -6,10 +6,10 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "transformed_data",
+						"referenceName": "raw",
 						"type": "DatasetReference"
 					},
-					"name": "TransformedData"
+					"name": "SSISAssignmentData"
 				}
 			],
 			"sinks": [
@@ -36,13 +36,12 @@
 				"          ProductID as integer,",
 				"          ProductName as string,",
 				"          Quantity as integer,",
-				"          Price as float,",
-				"          TotalAmount as float",
+				"          Price as float",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> TransformedData",
-				"TransformedData derive(CleanedProductName = regexReplace(ProductName, '[^A-Za-z0-9]+', ' ')) ~> DerivedColumnCleanedProductName",
+				"     ignoreNoFilesFound: false) ~> SSISAssignmentData",
+				"SSISAssignmentData derive(CleanedProductName = lower(ProductName)) ~> DerivedColumnCleanedProductName",
 				"DerivedColumnCleanedProductName sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",

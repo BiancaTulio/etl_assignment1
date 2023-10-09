@@ -1,5 +1,5 @@
 {
-	"name": "pl_transform_raw_data",
+	"name": "pl_import_data",
 	"properties": {
 		"activities": [
 			{
