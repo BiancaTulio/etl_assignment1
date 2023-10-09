@@ -344,6 +344,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
+						"fileName": "HighValueTransactions.csv",
 						"container": "transformed"
 					},
 					"columnDelimiter": ",",
@@ -399,6 +400,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
+						"fileName": "LowValueTransactions.csv",
 						"container": "transformed"
 					},
 					"columnDelimiter": ",",
@@ -1042,6 +1044,221 @@
 				"[concat(variables('factoryId'), '/datasets/part3_cleaned_data')]",
 				"[concat(variables('factoryId'), '/datasets/additional_data')]",
 				"[concat(variables('factoryId'), '/datasets/merged_data')]",
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_foreach_loop')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEachFile",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "GetFileList",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GetFileList').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "IfCondition",
+									"type": "IfCondition",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@or(equals(activity('GetFileList').output.childItems, 'Input04.txt'), equals(activity('GetFileList').output.childItems, 'Inputt04.txt'))",
+											"type": "Expression"
+										},
+										"ifTrueActivities": [
+											{
+												"name": "Sink",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "DelimitedTextSource",
+														"storeSettings": {
+															"type": "AzureBlobStorageReadSettings",
+															"recursive": true,
+															"enablePartitionDiscovery": false
+														},
+														"formatSettings": {
+															"type": "DelimitedTextReadSettings"
+														}
+													},
+													"sink": {
+														"type": "DelimitedTextSink",
+														"storeSettings": {
+															"type": "AzureBlobStorageWriteSettings"
+														},
+														"formatSettings": {
+															"type": "DelimitedTextWriteSettings",
+															"quoteAllText": true,
+															"fileExtension": ".txt"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "loop_files",
+														"type": "DatasetReference",
+														"parameters": {
+															"file_name": "@{item().name}"
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "loop_files",
+														"type": "DatasetReference",
+														"parameters": {
+															"file_name": "FileOne.csv"
+														}
+													}
+												]
+											}
+										]
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "GetFileList",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "loop",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "transform"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/loop')]",
+				"[concat(variables('factoryId'), '/datasets/loop_files')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/loop')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "loop"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "loop"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/loop_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "etl_assignment1_ls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"file_name": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "loop"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "@dataset().file_name",
+						"container": "loop"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/etl_assignment1_ls')]"
 			]
 		}
