@@ -6,12 +6,16 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "cleaned_data",
+						"referenceName": "part3_cleaned_data",
 						"type": "DatasetReference"
 					},
-					"name": "CleanedData"
+					"name": "Part3CleanedData"
 				},
 				{
+					"dataset": {
+						"referenceName": "additional_data",
+						"type": "DatasetReference"
+					},
 					"name": "AdditionalData"
 				}
 			],
@@ -26,24 +30,11 @@
 						"referenceName": "etl_assignment1_ls",
 						"type": "LinkedServiceReference"
 					}
-				},
-				{
-					"name": "AppendedData",
-					"rejectedDataLinkedService": {
-						"referenceName": "etl_assignment1_ls",
-						"type": "LinkedServiceReference"
-					}
 				}
 			],
 			"transformations": [
 				{
-					"name": "JoinSources"
-				},
-				{
-					"name": "RemoveDuplicatedColumns"
-				},
-				{
-					"name": "UnionSources"
+					"name": "MergeData"
 				}
 			],
 			"scriptLines": [
@@ -52,42 +43,25 @@
 				"          ProductID as integer,",
 				"          ProductName as string,",
 				"          Quantity as integer,",
-				"          Price as float,",
-				"          TotalAmount as float,",
-				"          CleanedProductName as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     inferDriftedColumnTypes: true,",
-				"     ignoreNoFilesFound: false) ~> CleanedData",
-				"source(output(",
-				"          TransactionID as integer,",
-				"          ProductID as integer,",
-				"          ProductName as string,",
-				"          Quantity as float,",
 				"          Price as float",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     inferDriftedColumnTypes: true) ~> AdditionalData",
-				"CleanedData, AdditionalData join(CleanedData@ProductID == AdditionalData@ProductID,",
-				"     joinType:'left',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> JoinSources",
-				"JoinSources select(mapColumn(",
-				"          TransactionID = CleanedData@TransactionID,",
-				"          ProductID = CleanedData@ProductID,",
-				"          ProductName = CleanedData@ProductName,",
-				"          Quantity = CleanedData@Quantity,",
-				"          Price = CleanedData@Price,",
-				"          TotalAmount,",
-				"          CleanedProductName",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> Part3CleanedData",
+				"source(output(",
+				"          TransactionID as integer,",
+				"          ProductID as integer,",
+				"          ProductName as string,",
+				"          Quantity as integer,",
+				"          Price as float",
 				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> RemoveDuplicatedColumns",
-				"AdditionalData, CleanedData union(byName: true)~> UnionSources",
-				"RemoveDuplicatedColumns sink(allowSchemaDrift: true,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> AdditionalData",
+				"Part3CleanedData, AdditionalData union(byName: false)~> MergeData",
+				"MergeData sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          TransactionID as string,",
@@ -101,13 +75,7 @@
 				"     partitionFileNames:['MergedData.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> MergedData",
-				"UnionSources sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     partitionFileNames:['AppendedData.csv'],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> AppendedData"
+				"     partitionBy('hash', 1)) ~> MergedData"
 			]
 		}
 	}
