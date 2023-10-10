@@ -126,9 +126,6 @@
 						"Subject": "An error has occurred!",
 						"ErrorMessage": "The ADF pipeline 1_pl_execute_all has crashed! Please check the logs.",
 						"EmailTo": "bianca.tulioyarck@yh.nackademin.se"
-					},
-					"authentication": {
-						"type": "MSI"
 					}
 				}
 			}
