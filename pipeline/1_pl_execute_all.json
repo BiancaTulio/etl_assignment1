@@ -1,0 +1,104 @@
+{
+	"name": "1_pl_execute_all",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute 1_pl_import_data",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "1_pl_import_data",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute 2_pl_data_cleanup",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute 1_pl_import_data",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "2_pl_data_cleanup",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute 3_pl_data_merge",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute 2_pl_data_cleanup",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "3_pl_data_merge",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute 4_pl_conditional_processing",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute 3_pl_data_merge",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "4_pl_conditional_processing",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute 5_pl_foreach_loop",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute 4_pl_conditional_processing",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "5_pl_foreach_loop",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "execute"
+		},
+		"annotations": []
+	}
+}
