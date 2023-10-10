@@ -918,7 +918,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_foreach_loop')]",
+			"name": "[concat(parameters('factoryName'), '/5_pl_foreach_loop')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1107,7 +1107,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_conditional_processing')]",
+			"name": "[concat(parameters('factoryName'), '/4_pl_conditional_processing')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1157,7 +1157,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_data_cleanup')]",
+			"name": "[concat(parameters('factoryName'), '/2_pl_data_cleanup')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1206,7 +1206,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_data_merge')]",
+			"name": "[concat(parameters('factoryName'), '/3_pl_data_merge')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
