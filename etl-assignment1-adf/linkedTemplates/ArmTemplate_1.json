@@ -13,13 +13,13 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/1_pl_import_data')]",
+			"name": "[concat(parameters('factoryName'), '/4_pl_conditional_processing')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "CreateTotalAmount",
+						"name": "ConditionalProcessing",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -32,12 +32,13 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "CreateTotalAmount",
+								"referenceName": "ConditionalProcessing",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"SSISAssignmentData": {},
-									"TransformedData": {}
+									"Part4MergedData": {},
+									"HighValueTransactions": {},
+									"LowValueTransactions": {}
 								}
 							},
 							"staging": {},
@@ -55,8 +56,7 @@
 				"folder": {
 					"name": "transform"
 				},
-				"annotations": [],
-				"lastPublishTime": "2023-10-06T10:04:01Z"
+				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -174,7 +174,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/1_pl_import_data')]"
+				"[concat(variables('factoryId'), '/pipelines/4_pl_conditional_processing')]"
 			]
 		},
 		{
