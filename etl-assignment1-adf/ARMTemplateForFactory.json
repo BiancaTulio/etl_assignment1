@@ -1353,7 +1353,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Execute 1_pl_import_data",
+						"name": "1_pl_import_data",
 						"type": "ExecutePipeline",
 						"dependsOn": [],
 						"userProperties": [],
@@ -1367,11 +1367,11 @@
 						}
 					},
 					{
-						"name": "Execute 2_pl_data_cleanup",
+						"name": "2_pl_data_cleanup",
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Execute 1_pl_import_data",
+								"activity": "1_pl_import_data",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1388,11 +1388,11 @@
 						}
 					},
 					{
-						"name": "Execute 3_pl_data_merge",
+						"name": "3_pl_data_merge",
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Execute 2_pl_data_cleanup",
+								"activity": "2_pl_data_cleanup",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1409,11 +1409,11 @@
 						}
 					},
 					{
-						"name": "Execute 4_pl_conditional_processing",
+						"name": "4_pl_conditional_processing",
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Execute 3_pl_data_merge",
+								"activity": "3_pl_data_merge",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1430,11 +1430,11 @@
 						}
 					},
 					{
-						"name": "Execute 5_pl_foreach_loop",
+						"name": "5_pl_foreach_loop",
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Execute 4_pl_conditional_processing",
+								"activity": "4_pl_conditional_processing",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1448,40 +1448,6 @@
 							},
 							"waitOnCompletion": true,
 							"parameters": {}
-						}
-					},
-					{
-						"name": "SendErrorEmail",
-						"type": "WebActivity",
-						"dependsOn": [
-							{
-								"activity": "Execute 5_pl_foreach_loop",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": "https://prod2-10.swedencentral.logic.azure.com:443/workflows/4b9fe050646f4e0c90361b2a4998cded/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=PGFRafMvH_QSeBpuK9FoTsNkg4EFZDS4O4xVDyhCXTE",
-							"method": "POST",
-							"headers": {
-								"Content-Type": "application/json"
-							},
-							"body": {
-								"DataFactoryName": "@{pipeline().DataFactory}",
-								"PipelineName": "@{pipeline().Pipeline}",
-								"Subject": "An error has occurred!",
-								"ErrorMessage": "The ADF pipeline 1_pl_execute_all has crashed! Please check the logs.",
-								"EmailTo": "bianca.tulioyarck@yh.nackademin.se"
-							}
 						}
 					}
 				],
