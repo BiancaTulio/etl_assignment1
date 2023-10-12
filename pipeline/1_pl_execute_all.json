@@ -4,6 +4,7 @@
 		"activities": [
 			{
 				"name": "1_pl_import_data",
+				"description": "Executes pipeline 1_pl_import_data",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
@@ -17,6 +18,7 @@
 			},
 			{
 				"name": "2_pl_data_cleanup",
+				"description": "Executes pipeline 2_pl_data_cleanup",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
@@ -37,6 +39,7 @@
 			},
 			{
 				"name": "3_pl_data_merge",
+				"description": "Executes pipeline 3_pl_data_merge",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
@@ -57,6 +60,7 @@
 			},
 			{
 				"name": "4_pl_conditional_processing",
+				"description": "Executes pipeline 4_pl_conditional_processing",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
@@ -77,6 +81,7 @@
 			},
 			{
 				"name": "5_pl_foreach_loop",
+				"description": "Executes pipeline 5_pl_foreach_loop",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
